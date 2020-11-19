@@ -1,23 +1,70 @@
-- if @id_token
-  %h2 Decoded ID Token
-  %pre= @id_token.pretty_inspect
-- if @access_token
-  %h2 Decoded Access Token
-  %pre= @access_token.pretty_inspect
-- if @token_set
-  %h2 Rest of token_set
-  %strong expires_in:
-  %span= @token_set["expires_in"]
-  %hr
-  %strong token_type:
-  %span= @token_set["token_type"]
-  %hr
-  %strong refresh_token:
-  %code= @token_set["refresh_token"]
-  %hr
-  %strong scope:
-  %code= @token_set["scope"]
-  %hr
-- else
-  %a{href: "#{@auth_url}"}
-    %img{src: "https://developer.xero.com/static/images/documentation/ConnectToXero2019/connect-blue.svg"}
+%body
+  %form{action: "/xero-signup", method: "POST"}
+    .sso-xero
+      %span{"data-height" => "60", "data-href" => @auth_url, "data-label" => "Sign in with Xero", "data-size" => "large", "data-theme" => "dark", "data-xero-sso" => "", style: "margin: 0 auto; margin-top: 30px;"}
+    %script{:async => "", :defer => "defer", :src => "https://edge.xero.com/platform/sso/xero-sso.js"}
+    %br
+    %h1 Or register manually
+    %hr{style: 'margin: 20px;'}
+
+    %fieldset
+      %legend
+        %span.number> 1
+        Basic Info
+      %label{for: "name"} First Name:
+      %input#name{required: true, name: "first_name", type: "text", value: @form_data[:given_name]}
+      %label{for: "name"} Last Name:
+      %input#name{required: true, name: "last_name", type: "text", value: @form_data[:family_name]}
+      %label{for: "mail"} Email:
+      %input#mail{required: true, name: "user_email", type: "email", value: @form_data[:email]}
+    %fieldset
+      %legend
+        %span.number> 2
+        Your Business
+      %label{for: "mail"} Organisation Name:
+      %input#business{required: true, name: "user_email", type: "text", value: @form_data[:org_name]}
+      %label Numer of Customer:
+      %input#development{name: "customer_count", type: "checkbox", value: "1-50", checked: @form_data[:contacts_count].between?(1,50)}
+      %label.light{for: "development"} 0-50
+      %br/
+      %input#design{name: "customer_count", type: "checkbox", value: "50-100", checked: @form_data[:contacts_count].between?(50,100)}
+      %label.light{for: "design"} 50-100
+      %br/
+      %input#business{name: "customer_count", type: "checkbox", value: "100+", checked: @form_data[:contacts_count].between?(100,100000)}
+      %label.light{for: "business"} 100+
+    %fieldset
+      %label{for: "job"} Base Currency
+      %select#job{name: "currency_code"}
+        %optgroup{label: "Currency Code"}
+          %option{value: "EUR", selected: @form_data[:currency] == 'EUR'} EUR
+          %option{value: "USD", selected: @form_data[:currency] == 'USD'} USD
+          %option{value: "NZD", selected: @form_data[:currency] == 'NZD'} NZD
+          %option{value: "AUD", selected: @form_data[:currency] == 'AUD'} AUD
+          %option{value: "GBP", selected: @form_data[:currency] == 'GBP'} GBP
+          %option{value: "MXN", selected: @form_data[:currency] == 'MXN'} MXN
+          %option{value: "other"} other
+    
+    %fieldset
+      %legend
+        %span.number> 3
+        Contact Details
+      %label{for: "mail"} Timezone:
+      %input#mail{required: true, name: "timezone", type: "text", value: @form_data[:timezone]}
+      %label{for: "mail"} Phone:
+      %input#mail{required: true, name: "phone", type: "text", value: @form_data[:phone]}
+      
+      %label{for: "mail"} Address:
+      %input#mail{required: true, name: "street", type: "text", value: @form_data[:street], placeholder: 'Street'}
+      %input#mail{required: true, name: "city", type: "text", value: @form_data[:city], placeholder: 'City'}
+      %input#mail{required: true, name: "postal_code", type: "text", value: @form_data[:postal_code], placeholder: 'Postal Code'}
+
+    %fieldset
+      %legend
+        %span.number> 4
+        Security 
+        %span{style: 'color: red; font-size: 12px;'}= @form_data[:password]
+      %label{for: "mail"} Password:
+      %input#business{required: true, name: "password", type: "password"}
+      %label{for: "mail"} Password Confirmation:
+      %input#business{required: true, name: "password_confirmation", type: "password"}
+    %button{type: "submit"} Sign Up

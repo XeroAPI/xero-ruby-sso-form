@@ -1,0 +1,8 @@
+%h1 Welcome New User
+%hr
+.div{style: "width: 50%; margin: 0 auto;"}
+  - @params.each do |param|
+    .signup-param
+      %h3
+        = "#{param[0]}: "
+        %span= param[1]

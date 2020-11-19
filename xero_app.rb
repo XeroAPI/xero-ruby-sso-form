@@ -29,96 +29,74 @@ helpers do
   end
 end
 
-# Before every request, we need to check that we have
-# a session.
-# If we don't, then redirect to the index page to prompt
-# the user to go through the OAuth 2.0 authorization flow.
-before do
-  pass if request.path_info == '/auth/callback'
-  if (request.path_info != '/' && session[:token_set].nil?)
-    redirect to('/')
-  end
+get '/' do
+  @form_data = {
+    given_name: '',
+    family_name: '',
+    email: '',
+    org_name: '',
+    contacts_count: 0
+  }
+  @auth_url = xero_client.authorization_url
+  haml :home
 end
 
-# On the homepage, we need to define a few variables that are used by the
-# 'home.haml' layout file in the 'views/' directory.
-get '/' do
-  @token_set = session[:token_set]
-  @auth_url = xero_client.authorization_url
+get '/callback' do
+  token_set = xero_client.get_token_set_from_callback(params)
+  @id_token_details = JWT.decode(token_set['id_token'], nil, false)[0]
+  puts "\n"
+  puts @id_token_details
 
-  if @token_set && @token_set['access_token']
-    @access_token = JWT.decode @token_set['access_token'], nil, false
+  tenant_id = xero_client.connections.sort { |a,b|
+    DateTime.parse(a['updatedDateUtc']) <=> DateTime.parse(b['updatedDateUtc'])
+  }.first['tenantId']
+
+  @organisation = xero_client.accounting_api.get_organisations(tenant_id).organisations[0]
+  
+  @contacts = []
+  page = 1
+  continue = true
+  while continue
+    opts = { page: page }
+    puts opts
+    contacts = xero_client.accounting_api.get_contacts(tenant_id, opts).contacts
+
+    if contacts.count > 0 
+      @contacts << contacts
+      page += 1
+    else
+      continue = false
+    end
   end
-  if @token_set && @token_set['id_token']
-    @id_token =JWT.decode @token_set['id_token'], nil, false
-  end
+
+  puts @organisation.inspect
+
+  adr = @organisation.addresses[0]
+  phone = @organisation.phones[0]
+
+  @form_data = {
+    given_name: @id_token_details['given_name'],
+    family_name: @id_token_details['family_name'],
+    email: @id_token_details['email'],
+    org_name: @organisation.name,
+    contacts_count: @contacts.flatten.count,
+    currency: @organisation.base_currency,
+    timezone: @organisation.timezone,
+    street: adr.address_line1,
+    city: adr.address_line2,
+    postal_code: adr.postal_code,
+    phone: "#{phone.phone_type}: #{phone.phone_area_code} #{phone.phone_number}",
+    password: 'Set a password to create your account!'
+  }
+
+  puts "@form_data:::::: #{@form_data}"
+
+  @auth_url = xero_client.authorization_url
 
   haml :home
 end
 
-# This endpoint is used to handle the redirect from the
-# Xero OAuth 2.0 authorisation process
-get '/auth/callback' do
-  @token_set = xero_client.get_token_set_from_callback(params)
-  session[:token_set] = @token_set
-  redirect to('/')
-end
-
-# This endpoint redirects the user to connect another
-# Xero organisation.
-get '/add-connection' do
-  @auth_url = xero_client.authorization_url
-  redirect to(@auth_url)
-end
-
-# This endpoint is here specifically to refresh the token at will.
-# In a production setting this will most likely happen as part of a background job,
-# not something the user has to click.
-get '/refresh-token' do
-  @token_set = xero_client.refresh_token_set(session[:token_set])
-  session[:token_set] = @token_set
-
-  # Set some variables for the 'refresh_token.haml' view.
-  if @token_set && @token_set['access_token']
-    @access_token = JWT.decode @token_set['access_token'], nil, false
-  end
-  if @token_set && @token_set['id_token']
-    @id_token =JWT.decode @token_set['id_token'], nil, false
-  end
-
-  haml :refresh_token
-end
-
-# This endpoint allows the user to explicitly disconnect the app from
-# their Xero organisation.
-# Note: At this point in time, it assumes that you have a single organisation
-# connected.
-get '/disconnect' do
-  xero_client.set_token_set(session[:token_set])
-  # This will disconnect the first organisation that appears in the xero_client.connections array.
-  xero_client.disconnect(xero_client.connections[0]['id'])
-  @connections = xero_client.connections
-  haml :disconnect
-end
-
-# This endpoint will list the Xero organisations that your app is authorized to access.
-get '/connections' do
-  xero_client.set_token_set(session[:token_set])
-  @connections = xero_client.connections
-  haml :connections
-end
-
-# This endpoint shows invoice data via the 'invoices.haml' view.
-get '/invoices' do
-  xero_client.set_token_set(session[:token_set])
-  @invoices = xero_client.accounting_api.get_invoices(xero_client.connections[0]['tenantId']).invoices
-  haml :invoices
-end
-
-# This endpoint returns the object of the first organisation that appears
-# in the xero_client.connections array.
-get '/organisation' do
-  xero_client.set_token_set(session[:token_set])
-  @organisations = xero_client.accounting_api.get_organisations(xero_client.connections[0]['tenantId']).organisations
-  haml :organisation
+post '/xero-signup' do
+  @params = params.reject { |k, v| ["password", "password_confirmation"].include? k }
+  haml :dashboard
 end

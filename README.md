@@ -1,29 +1,54 @@
-This is a basic application showing how to get started with the Xero's official [xero-ruby](https://github.com/XeroAPI/xero-ruby) SDK
+This is a basic application showing how to use the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk and the OAuth2.0 and OpenID Connect flow to pre-populate a signup form for your application.
 
-*It uses [Sinatra](https://github.com/sinatra/sinatra) which is a DSL for creating simple web applications in Ruby with minimal effort*
+# Signup with Xero
+
+As more small business apps join Xero's marketplace we have found a huge signup conversion boost for apps create, and subsequently login with their Xero account.
+
+Full docs on that here:
+[Sign Up with Xero](https://developer.xero.com/documentation/oauth2/sign-up)
+[Sign In with Xero](https://developer.xero.com/documentation/oauth2/sign-in)
+
+> Interested in joining the Xero Partner program?
+> https://developer.xero.com/partner/app-partner
+
+However SSO does not always work with an app's infrastructure or their on-boarding process might start with booking a demo, instead of immediately starting a free-trial.
+
+Because Xero leverages OA2 and OpenID Connect we can use the decoded `id_token` to prefill user details, and the `access_token` to make a few API calls the pre-populate dynamic signup details.
+
+![img1](./public/images/sso.jpg)
+
+Using jsut a few lines of code, we can pre-populate the following fields from Xero's API which makes a great user experience versus dropping someone on a blank landing page.
+
+* given_name
+* family_name
+* email
+* org_name
+* contacts_count
+* currency
+* timezone
+* street
+* city
+* postal_code
+* phone
+* password
+
 
 # Getting Started
-### 1) Make sure you have at least Ruby 2.7 [installed](https://www.ruby-lang.org/en/documentation/installation/)
 ```bash
 ruby -v
 ruby 2.7.0
 ```
 
-### 2) Create an app in Xero's developer portal
 https://developer.xero.com/myapps/
 
-### 3) Decide what `scopes` your application needs
-https://developer.xero.com/documentation/oauth2/scopes
-
-### 4) Clone app and rename `sample.env` to `.env` and replace with the **4 required parameters**
+Clone app and rename `sample.env` to `.env` and replace with the **4 required parameters**
 ```bash
 $ git clone git@github.com:XeroAPI/xero-ruby-oauth2-starter.git
 $ cd xero-ruby-oauth2-starter/
 $ mv sample.env .env
 ```
-Replace `CLIENT_ID`, `CLIENT_SECRET`, `REDIRECT_URI` & `SCOPES` with your unique parameters
+Replace `CLIENT_ID`, `CLIENT_SECRET` & `REDIRECT_URI` with your unique params.
 
-### 5) Install dependencies & run the app
 ```bash
 $ bundle install
 $ bundle exec ruby xero_app.rb
@@ -33,29 +58,4 @@ $ bundle exec ruby xero_app.rb
 
 ----
 
-## Sample getting started code
-Setting up and connecting to the XeroAPI with the `xero-ruby` SDK is simple
-
-```ruby
-@xero_client = XeroRuby::ApiClient.new(credentials: {
-  client_id: ENV['CLIENT_ID'],
-  client_secret: ENV['CLIENT_SECRET'],
-  redirect_uri: 'http://localhost:4567/auth/callback',
-  scopes: ENV['SCOPES']
-})
-
-get '/auth' do
-  redirect to(@xero_client.authorization_url)
-end
-
-get '/auth/callback' do
-  @xero_client.get_token_set_from_callback(params)
-  tenant_id = @xero_client.connections.last['tenantId']
-  @invoices = @xero_client.accounting_api.get_invoices(tenant_id).invoices
-end
-```
-
-Checkout `xero_app.rb` for all the sample code you need to get started for your own app
-
-## App functionality
-![walkthrough](./public/images/xero-ruby-getting-started.gif)
+Checkout `xero_app.rb` for all the sample code you need to learn hwo to use the `id_token` for pre-populating a demo or signup form via.
