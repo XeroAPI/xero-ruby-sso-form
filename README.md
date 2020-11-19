@@ -1,4 +1,4 @@
-This is a basic application showing how to use the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk and the OAuth2.0 and OpenID Connect flow to pre-populate a signup form for your application.
+This is a basic application showing how to use the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk and the OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
 
 # Signup with Xero
 
