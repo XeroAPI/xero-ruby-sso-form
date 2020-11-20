@@ -44,12 +44,10 @@ end
 get '/callback' do
   token_set = xero_client.get_token_set_from_callback(params)
   @id_token_details = JWT.decode(token_set['id_token'], nil, false)[0]
-  puts "\n"
-  puts @id_token_details
 
   tenant_id = xero_client.connections.sort { |a,b|
     DateTime.parse(a['updatedDateUtc']) <=> DateTime.parse(b['updatedDateUtc'])
-  }.first['tenantId']
+  }.last['tenantId']
 
   @organisation = xero_client.accounting_api.get_organisations(tenant_id).organisations[0]
   
@@ -58,7 +56,6 @@ get '/callback' do
   continue = true
   while continue
     opts = { page: page }
-    puts opts
     contacts = xero_client.accounting_api.get_contacts(tenant_id, opts).contacts
 
     if contacts.count > 0 
@@ -68,8 +65,6 @@ get '/callback' do
       continue = false
     end
   end
-
-  puts @organisation.inspect
 
   adr = @organisation.addresses[0]
   phone = @organisation.phones[0]
@@ -88,8 +83,6 @@ get '/callback' do
     phone: phone ? "#{phone.phone_type}: #{phone.phone_area_code} #{phone.phone_number}" : '',
     password: 'Set a password to create your account!'
   }
-
-  puts "@form_data:::::: #{@form_data}"
 
   @auth_url = xero_client.authorization_url
 
