@@ -82,10 +82,10 @@ get '/callback' do
     contacts_count: @contacts.flatten.count,
     currency: @organisation.base_currency,
     timezone: @organisation.timezone,
-    street: adr.address_line1,
-    city: adr.address_line2,
-    postal_code: adr.postal_code,
-    phone: "#{phone.phone_type}: #{phone.phone_area_code} #{phone.phone_number}",
+    street: adr ? adr.address_line1 : '',
+    city: adr ? adr.address_line2 : '',
+    postal_code: adr ? adr.postal_code : '',
+    phone: phone ? "#{phone.phone_type}: #{phone.phone_area_code} #{phone.phone_number}" : '',
     password: 'Set a password to create your account!'
   }
 
