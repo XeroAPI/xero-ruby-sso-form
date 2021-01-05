@@ -3,21 +3,21 @@
 This is a basic application showing how to use OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
 
 Full documentation on SSU and SSO:
-[Sign Up with Xero](https://developer.xero.com/documentation/oauth2/sign-up)
-[Sign In with Xero](https://developer.xero.com/documentation/oauth2/sign-in)
+* [Sign Up with Xero](https://developer.xero.com/documentation/oauth2/sign-up)
+* [Sign In with Xero](https://developer.xero.com/documentation/oauth2/sign-in)
 
 **This repo uses the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk**
 
 > Interested in joining the Xero Partner program?
 > https://developer.xero.com/partner/app-partner
 
-However SSO does not always work with an app's infrastructure or their on-boarding process might start with booking a demo, instead of immediately starting a free-trial.
+----
 
-Because Xero leverages OA2 and OpenID Connect we can use the decoded `id_token` to prefill user details, and the `access_token` to make a few API calls the pre-populate dynamic signup details.
+Full **Single Sign On** does not always work with an app's infrastructure or their on-boarding process might start with booking a demo, instead of immediately starting a free-trial. Because Xero leverages OA2 and OpenID Connect we can use the decoded `id_token` to prefill user details, and the `access_token` to make a few API calls the pre-populate dynamic signup details.
 
 ![img1](./public/images/sso.jpg)
 
-Using jsut a few lines of code, we can pre-populate the following fields from Xero's API which makes a great user experience versus dropping someone on a blank landing page.
+Using just a few lines of code, we can pre-populate the following fields from Xero's API which makes a great user experience versus dropping someone on a blank landing page.
 
 * given_name
 * family_name
