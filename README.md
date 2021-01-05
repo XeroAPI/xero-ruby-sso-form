@@ -1,12 +1,12 @@
-This is a basic application showing how to use the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk and the OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
+# Signup with Xero - "SSO Light"
 
-# Signup with Xero
+This is a basic application showing how to use OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
 
-As more small business apps join Xero's marketplace we have found a huge signup conversion boost for apps create, and subsequently login with their Xero account.
-
-Full docs on that here:
+Full documentation on SSU and SSO:
 [Sign Up with Xero](https://developer.xero.com/documentation/oauth2/sign-up)
 [Sign In with Xero](https://developer.xero.com/documentation/oauth2/sign-in)
+
+**This repo uses the [xero-ruby](https://github.com/XeroAPI/xero-ruby) sdk**
 
 > Interested in joining the Xero Partner program?
 > https://developer.xero.com/partner/app-partner
