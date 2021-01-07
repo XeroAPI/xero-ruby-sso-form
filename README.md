@@ -11,6 +11,10 @@ Full documentation on SSU and SSO:
 > Interested in joining the Xero Partner program?
 > https://developer.xero.com/partner/app-partner
 
+
+### Hosted Demo
+> https://xero-sso-form.herokuapp.com
+
 ----
 
 Full **Single Sign On** does not always work with an app's infrastructure or their on-boarding process might start with booking a demo, instead of immediately starting a free-trial. Because Xero leverages OA2 and OpenID Connect we can use the decoded `id_token` to prefill user details, and the `access_token` to make a few API calls the pre-populate dynamic signup details.
