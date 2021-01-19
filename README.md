@@ -2,6 +2,9 @@
 
 This is a basic application showing how to use OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
 
+The goal is to use Xero’s API to authorize an existing Xero customer using the supported OpenID Connect scopes which will return back the id_token to an application. Instead of dropping an interested Xero customer on a blank landing page where they have to re-enter their details and submit a signup form, they land in the context of the app partner’s existing sales process complete with the existing data contained in the id_token such as email, first_name, and last_name.
+> https://devblog.xero.com/how-to-leverage-openid-connect-to-boost-signup-conversion-20b952cc457a
+
 Full documentation on SSU and SSO:
 * [Sign Up with Xero](https://developer.xero.com/documentation/oauth2/sign-up)
 * [Sign In with Xero](https://developer.xero.com/documentation/oauth2/sign-in)
