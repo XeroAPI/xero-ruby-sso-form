@@ -1,4 +1,6 @@
-# Signup with Xero - "SSO Light"
+# Signup with Xero - "SSU to Lead"
+
+> _Single Sign Up to Web Lead_
 
 This is a basic application showing how to use OAuth2.0 and OpenID Connect flow to pre-populate a signup form.
 
